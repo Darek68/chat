@@ -12,6 +12,12 @@ public class ClientHandler {
     private DataInputStream in;
     private String username;
 
+    private boolean isAdmin;
+
+    public boolean isAdmin() {
+        return isAdmin;
+    }
+
     public String getUsername() {
         return username;
     }
@@ -41,13 +47,22 @@ public class ClientHandler {
                     break;
                 }
                 if (message.startsWith("/w ")) {
-                    //privateMessage(this, message);
                     String[] elements = message.split(" ", 3);
                     if (elements.length < 3) {
                         sendMessage("Некорректная команда /w");
+                    } else server.sendPrivateMessage(this, elements[1], elements[2]);
+                }
+                if (message.startsWith("/kick ")) {
+                    if (!isAdmin) {
+                        sendMessage("Вы не обладаете правами админа!");
+                    } else {
+                        String[] elements = message.split(" ", 2);
+                        if (elements.length < 2) {
+                            sendMessage("Некорректная команда /kick");
+                        } else {
+                            server.kick(elements[1], this);
+                        }
                     }
-                    System.out.println(message + " " + elements[1] + " " + elements[2]);
-                    server.sendPrivateMessage(this, elements[1], elements[2]);
                 }
             } else {
                 server.broadcastMessage(username + ": " + message);
@@ -56,6 +71,7 @@ public class ClientHandler {
     }
 
     public void sendMessage(String message) {
+        if (isAdmin) message = "(U-adm) " + message;
         try {
             out.writeUTF(message);
         } catch (IOException e) {
@@ -106,6 +122,8 @@ public class ClientHandler {
             return false;
         }
         username = usernameFromUserService;
+        isAdmin = server.getUserService().getIsAdminByUsername(username);
+
         server.subscribe(this);
         sendMessage("/authok " + username);
         sendMessage("СЕРВЕР: " + username + ", добро пожаловать в чат!");
