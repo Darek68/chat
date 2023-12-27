@@ -89,6 +89,7 @@ public class Server {
             }
         }
         if (kickHandler != null) {
+            kickHandler.sendMessage("/exit_confirmed");
             kickHandler.disconnect();
         } else {
             admin.sendMessage("<private> Не найден пользователь: " + kickUsername);

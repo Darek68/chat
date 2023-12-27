@@ -44,6 +44,7 @@ public class ClientHandler {
             String message = in.readUTF();
             if (message.startsWith("/")) {
                 if (message.equals("/exit")) {
+                    sendMessage("/exit_confirmed");
                     break;
                 }
                 if (message.startsWith("/w ")) {
