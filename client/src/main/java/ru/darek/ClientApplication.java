@@ -40,7 +40,9 @@ public class ClientApplication {
                     }
                     while (true) {
                         String message = in.readUTF();
-                        if (message.equals("/exit_confirmed")) {
+                        if (message.startsWith("/exit_confirmed")) break;
+                        if (message.startsWith("/exit_kick")) {
+                            out.writeUTF("/exit");
                             break;
                         }
                         System.out.println(message);
@@ -51,7 +53,7 @@ public class ClientApplication {
                 } catch (IOException e) {
                     System.out.println("Потеряна связь с сокетом!");
                     e.printStackTrace();
-                }finally {
+                } finally {
                     disconnect();
                 }
             }).start();
@@ -66,6 +68,7 @@ public class ClientApplication {
             e.printStackTrace();
         }
     }
+
     private static void disconnect() {
         try {
             if (in != null) {

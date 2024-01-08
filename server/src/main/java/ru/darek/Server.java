@@ -23,8 +23,8 @@ public class Server {
     public void start() {
         try (ServerSocket serverSocket = new ServerSocket(port)) {
             System.out.printf("Сервер запущен на порту %d. Ожидание подключения клиентов\n", port);
-            userService = new InMemoryUserService();
-          //  userService = new InPostgresUserService();
+          //  userService = new InMemoryUserService();
+            userService = new InPostgresUserService();
             System.out.println("Запущен сервис для работы с пользователями");
             while (true) {
                 Socket socket = serverSocket.accept();
@@ -90,8 +90,8 @@ public class Server {
             }
         }
         if (kickHandler != null) {
-            kickHandler.sendMessage("/exit_confirmed");
-            kickHandler.disconnect();
+            kickHandler.sendMessage("/exit_kick");
+          //  kickHandler.disconnect();
         } else {
             admin.sendMessage("<private> Не найден пользователь: " + kickUsername);
         }

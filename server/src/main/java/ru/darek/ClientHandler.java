@@ -72,7 +72,7 @@ public class ClientHandler {
     }
 
     public void sendMessage(String message) {
-        if (isAdmin) message = "(U-adm) " + message;
+        if (isAdmin) message = message + " (U-adm)";
         try {
             out.writeUTF(message);
         } catch (IOException e) {
