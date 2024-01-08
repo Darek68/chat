@@ -24,6 +24,7 @@ public class Server {
         try (ServerSocket serverSocket = new ServerSocket(port)) {
             System.out.printf("Сервер запущен на порту %d. Ожидание подключения клиентов\n", port);
             userService = new InMemoryUserService();
+          //  userService = new InPostgresUserService();
             System.out.println("Запущен сервис для работы с пользователями");
             while (true) {
                 Socket socket = serverSocket.accept();
@@ -64,10 +65,8 @@ public class Server {
     }
 
     public synchronized void sendPrivateMessage(ClientHandler sender, String receiverUsername, String message) {
-        System.out.println(sender.getUsername() + " " + receiverUsername + " " + message);
         boolean findReciver = false;
         for (ClientHandler clientHandler : clients) {
-            System.out.println(receiverUsername + " " + clientHandler.getUsername());
             if (clientHandler.getUsername().equals(receiverUsername)) {
                 clientHandler.sendMessage("<private> " + sender.getUsername() + ": " + message);
                 findReciver = true;
@@ -77,6 +76,24 @@ public class Server {
             sender.sendMessage("<private> " + sender.getUsername() + ": " + message);
         } else {
             sender.sendMessage("<private> Не найден пользователь: " + receiverUsername);
+        }
+    }
+
+    public void kick(String kickUsername, ClientHandler admin) {
+        // System.out.println( "kick " + kickUsername);
+        ClientHandler kickHandler = null;
+        for (ClientHandler clientHandler : clients) {
+            //  System.out.println(kickUsername + " " + clientHandler.getUsername());
+            if (clientHandler.getUsername().equals(kickUsername)) {
+                kickHandler = clientHandler;
+                break;
+            }
+        }
+        if (kickHandler != null) {
+            kickHandler.sendMessage("/exit_confirmed");
+            kickHandler.disconnect();
+        } else {
+            admin.sendMessage("<private> Не найден пользователь: " + kickUsername);
         }
     }
 }
